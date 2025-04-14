@@ -1,0 +1,16 @@
+[gd_scene load_steps=2 format=3 uid="uid://dlgu7bpoc5fnn"]
+
+[ext_resource type="Script" uid="uid://uiam1nj44mwt" path="res://scripts/global/managers/time_manager/time_manager.gd" id="1_5b8d3"]
+
+[node name="TimeManager" type="Node2D"]
+script = ExtResource("1_5b8d3")
+
+[node name="SecondsTimer" type="Timer" parent="."]
+autostart = true
+
+[node name="MinutesTimer" type="Timer" parent="."]
+wait_time = 60.0
+autostart = true
+
+[connection signal="timeout" from="SecondsTimer" to="." method="_on_seconds_timer_timeout"]
+[connection signal="timeout" from="MinutesTimer" to="." method="_on_minutes_timer_timeout"]
