@@ -1,0 +1,177 @@
+[gd_scene load_steps=21 format=3 uid="uid://bbo8midd5sr35"]
+
+[ext_resource type="Script" uid="uid://bdha8yckewwr5" path="res://scenes/assets/creatures/creature001/creature_001.gd" id="1_1gv3r"]
+[ext_resource type="Texture2D" uid="uid://ha7v0utpguqa" path="res://assets/pixelart/sprites/creatures/Sprite-0001-cube.png" id="1_2fd2o"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iernp"]
+atlas = ExtResource("1_2fd2o")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_855hj"]
+atlas = ExtResource("1_2fd2o")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_64aob"]
+atlas = ExtResource("1_2fd2o")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gjage"]
+atlas = ExtResource("1_2fd2o")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x0mk0"]
+atlas = ExtResource("1_2fd2o")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2hqms"]
+atlas = ExtResource("1_2fd2o")
+region = Rect2(160, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1bkat"]
+atlas = ExtResource("1_2fd2o")
+region = Rect2(192, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6ulxj"]
+atlas = ExtResource("1_2fd2o")
+region = Rect2(224, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_1o8wa"]
+animations = [{
+"frames": [{
+"duration": 3.0,
+"texture": SubResource("AtlasTexture_iernp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_855hj")
+}, {
+"duration": 2.0,
+"texture": SubResource("AtlasTexture_64aob")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gjage")
+}, {
+"duration": 2.5,
+"texture": SubResource("AtlasTexture_x0mk0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2hqms")
+}, {
+"duration": 2.0,
+"texture": SubResource("AtlasTexture_1bkat")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6ulxj")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_rjhew"]
+size = Vector2(28, 10)
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_1gv3r"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1gv3r"]
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3wwms"]
+bg_color = Color(0.906178, 0, 0.245863, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jnfck"]
+bg_color = Color(8.27849e-06, 0.655471, 0.867444, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_377jj"]
+bg_color = Color(0.897724, 0.469043, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_na0uy"]
+bg_color = Color(0.404576, 0.691146, 1.54018e-06, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_328mx"]
+bg_color = Color(0.539143, 0.533726, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vtki1"]
+bg_color = Color(1, 0.273101, 0.750435, 1)
+
+[node name="Monster001" type="CharacterBody2D"]
+script = ExtResource("1_1gv3r")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -14)
+sprite_frames = SubResource("SpriteFrames_1o8wa")
+animation = &"idle"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -3)
+shape = SubResource("RectangleShape2D_rjhew")
+
+[node name="UI-Elements" type="Node2D" parent="."]
+
+[node name="Control" type="Control" parent="UI-Elements"]
+layout_mode = 3
+anchors_preset = 0
+offset_left = -20.0
+offset_top = -73.0
+offset_right = 20.0
+offset_bottom = -33.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI-Elements/Control"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/separation = 2
+alignment = 2
+
+[node name="HealthBar" type="ProgressBar" parent="UI-Elements/Control/VBoxContainer"]
+material = SubResource("CanvasItemMaterial_1gv3r")
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_1gv3r")
+theme_override_styles/fill = SubResource("StyleBoxFlat_3wwms")
+value = 50.0
+show_percentage = false
+
+[node name="StaminaBar" type="ProgressBar" parent="UI-Elements/Control/VBoxContainer"]
+material = SubResource("CanvasItemMaterial_1gv3r")
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_1gv3r")
+theme_override_styles/fill = SubResource("StyleBoxFlat_jnfck")
+value = 50.0
+show_percentage = false
+
+[node name="HungerBar" type="ProgressBar" parent="UI-Elements/Control/VBoxContainer"]
+material = SubResource("CanvasItemMaterial_1gv3r")
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_1gv3r")
+theme_override_styles/fill = SubResource("StyleBoxFlat_377jj")
+value = 50.0
+show_percentage = false
+
+[node name="EnergyBar" type="ProgressBar" parent="UI-Elements/Control/VBoxContainer"]
+material = SubResource("CanvasItemMaterial_1gv3r")
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_1gv3r")
+theme_override_styles/fill = SubResource("StyleBoxFlat_na0uy")
+value = 50.0
+show_percentage = false
+
+[node name="SocialBar" type="ProgressBar" parent="UI-Elements/Control/VBoxContainer"]
+material = SubResource("CanvasItemMaterial_1gv3r")
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_1gv3r")
+theme_override_styles/fill = SubResource("StyleBoxFlat_328mx")
+value = 50.0
+show_percentage = false
+
+[node name="MatingNeedBar" type="ProgressBar" parent="UI-Elements/Control/VBoxContainer"]
+material = SubResource("CanvasItemMaterial_1gv3r")
+custom_minimum_size = Vector2(0, 4)
+layout_mode = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_1gv3r")
+theme_override_styles/fill = SubResource("StyleBoxFlat_vtki1")
+value = 50.0
+show_percentage = false
