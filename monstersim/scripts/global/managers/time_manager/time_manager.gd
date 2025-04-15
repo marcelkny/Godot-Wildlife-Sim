@@ -22,7 +22,7 @@ func stop_timers() -> void:
 
 func _on_seconds_timer_timeout() -> void:
 	if time_is_paused == false:
-		print("seconds: ",game_seconds)
+		#print("seconds: ",game_seconds)
 		game_seconds+=1
 		emit_signal("second_passed")
 
@@ -30,5 +30,5 @@ func _on_seconds_timer_timeout() -> void:
 func _on_minutes_timer_timeout() -> void:
 	if time_is_paused == false:
 		game_minutes+=1
-		print("minutes: ",game_minutes)
+		#print("minutes: ",game_minutes)
 		emit_signal("minute_passed")

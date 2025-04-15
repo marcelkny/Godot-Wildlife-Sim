@@ -63,7 +63,7 @@ animations = [{
 "texture": SubResource("AtlasTexture_6ulxj")
 }],
 "loop": true,
-"name": &"idle",
+"name": &"idle_down",
 "speed": 5.0
 }]
 
@@ -99,7 +99,7 @@ script = ExtResource("1_1gv3r")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -14)
 sprite_frames = SubResource("SpriteFrames_1o8wa")
-animation = &"idle"
+animation = &"idle_down"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -3)
@@ -175,3 +175,25 @@ theme_override_styles/background = SubResource("StyleBoxFlat_1gv3r")
 theme_override_styles/fill = SubResource("StyleBoxFlat_vtki1")
 value = 50.0
 show_percentage = false
+
+[node name="senses" type="Node2D" parent="."]
+
+[node name="vision" type="Node2D" parent="senses"]
+
+[node name="RayCast2DFront" type="RayCast2D" parent="senses/vision"]
+position = Vector2(0, -8)
+target_position = Vector2(0, 150)
+
+[node name="timers" type="Node2D" parent="."]
+
+[node name="BehaviorChangeTimer" type="Timer" parent="timers"]
+one_shot = true
+autostart = true
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+avoidance_enabled = true
+radius = 15.0
+neighbor_distance = 200.0
+
+[connection signal="timeout" from="timers/BehaviorChangeTimer" to="." method="_on_behavior_change_timer_timeout"]
+[connection signal="velocity_computed" from="NavigationAgent2D" to="." method="_on_navigation_agent_2d_velocity_computed"]
