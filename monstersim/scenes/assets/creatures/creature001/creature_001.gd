@@ -29,6 +29,7 @@ extends CharacterBody2D
 @onready var nav = $NavigationAgent2D
 @onready var nav_map = nav.get_navigation_map() # Store this once if the map doesn't change
 @onready var raycast_front = $senses/vision/RayCast2DFront
+@onready var collision_shape = $CollisionShape2D
 
 @onready var behavior_timer = $"timers/BehaviorChangeTimer"
 
@@ -106,6 +107,11 @@ func _physics_process(delta: float) -> void:
 			_on_navigation_agent_2d_velocity_computed(velocity)
 
 		move_and_slide()
+		for i in get_slide_collision_count():
+			var collision = get_slide_collision(i)
+			if collision.get_collider().is_in_group("npcs"):
+				print("Collided with another NPC: ", collision.get_collider())
+		
 		current_direction = get_cardinal_direction(direction)
 	#print("Moving: ", current_direction)
 	

@@ -19,6 +19,10 @@ config/icon="res://icon.svg"
 
 TimeManager="*res://scripts/global/managers/time_manager/TimeManager.tscn"
 
+[global_group]
+
+npcs=""
+
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0

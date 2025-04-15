@@ -93,7 +93,7 @@ bg_color = Color(0.539143, 0.533726, 1, 1)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vtki1"]
 bg_color = Color(1, 0.273101, 0.750435, 1)
 
-[node name="Monster001" type="CharacterBody2D"]
+[node name="Monster001" type="CharacterBody2D" groups=["npcs"]]
 script = ExtResource("1_1gv3r")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
@@ -106,6 +106,7 @@ position = Vector2(0, -3)
 shape = SubResource("RectangleShape2D_rjhew")
 
 [node name="UI-Elements" type="Node2D" parent="."]
+visible = false
 
 [node name="Control" type="Control" parent="UI-Elements"]
 layout_mode = 3
@@ -192,8 +193,10 @@ autostart = true
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
 avoidance_enabled = true
-radius = 15.0
+radius = 25.0
 neighbor_distance = 200.0
+max_neighbors = 20
+time_horizon_agents = 2.0
 
 [connection signal="timeout" from="timers/BehaviorChangeTimer" to="." method="_on_behavior_change_timer_timeout"]
 [connection signal="velocity_computed" from="NavigationAgent2D" to="." method="_on_navigation_agent_2d_velocity_computed"]
