@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://bbo8midd5sr35"]
+[gd_scene load_steps=24 format=3 uid="uid://bbo8midd5sr35"]
 
 [ext_resource type="Script" uid="uid://bdha8yckewwr5" path="res://scenes/assets/creatures/creature001/creature_001.gd" id="1_1gv3r"]
 [ext_resource type="Texture2D" uid="uid://ha7v0utpguqa" path="res://assets/pixelart/sprites/creatures/Sprite-0001-cube.png" id="1_2fd2o"]
@@ -93,6 +93,15 @@ bg_color = Color(0.539143, 0.533726, 1, 1)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vtki1"]
 bg_color = Color(1, 0.273101, 0.750435, 1)
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_1gv3r"]
+radius = 280.064
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_377jj"]
+radius = 83.0241
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_3wwms"]
+radius = 148.03
+
 [node name="Monster001" type="CharacterBody2D" groups=["npcs"]]
 script = ExtResource("1_1gv3r")
 
@@ -106,7 +115,6 @@ position = Vector2(0, -3)
 shape = SubResource("RectangleShape2D_rjhew")
 
 [node name="UI-Elements" type="Node2D" parent="."]
-visible = false
 
 [node name="Control" type="Control" parent="UI-Elements"]
 layout_mode = 3
@@ -133,6 +141,7 @@ value = 50.0
 show_percentage = false
 
 [node name="StaminaBar" type="ProgressBar" parent="UI-Elements/Control/VBoxContainer"]
+visible = false
 material = SubResource("CanvasItemMaterial_1gv3r")
 custom_minimum_size = Vector2(0, 4)
 layout_mode = 2
@@ -151,6 +160,7 @@ value = 50.0
 show_percentage = false
 
 [node name="EnergyBar" type="ProgressBar" parent="UI-Elements/Control/VBoxContainer"]
+visible = false
 material = SubResource("CanvasItemMaterial_1gv3r")
 custom_minimum_size = Vector2(0, 4)
 layout_mode = 2
@@ -160,6 +170,7 @@ value = 50.0
 show_percentage = false
 
 [node name="SocialBar" type="ProgressBar" parent="UI-Elements/Control/VBoxContainer"]
+visible = false
 material = SubResource("CanvasItemMaterial_1gv3r")
 custom_minimum_size = Vector2(0, 4)
 layout_mode = 2
@@ -169,6 +180,7 @@ value = 50.0
 show_percentage = false
 
 [node name="MatingNeedBar" type="ProgressBar" parent="UI-Elements/Control/VBoxContainer"]
+visible = false
 material = SubResource("CanvasItemMaterial_1gv3r")
 custom_minimum_size = Vector2(0, 4)
 layout_mode = 2
@@ -185,6 +197,28 @@ show_percentage = false
 position = Vector2(0, -8)
 target_position = Vector2(0, 150)
 
+[node name="areas" type="Node2D" parent="senses"]
+
+[node name="SearchAreaStarve" type="Area2D" parent="senses/areas"]
+visible = false
+position = Vector2(0, -10)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="senses/areas/SearchAreaStarve"]
+shape = SubResource("CircleShape2D_1gv3r")
+
+[node name="DefaultNoticingArea" type="Area2D" parent="senses/areas"]
+position = Vector2(0, -10)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="senses/areas/DefaultNoticingArea"]
+shape = SubResource("CircleShape2D_377jj")
+
+[node name="SearchAreaHunger" type="Area2D" parent="senses/areas"]
+visible = false
+position = Vector2(0, -10)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="senses/areas/SearchAreaHunger"]
+shape = SubResource("CircleShape2D_3wwms")
+
 [node name="timers" type="Node2D" parent="."]
 
 [node name="BehaviorChangeTimer" type="Timer" parent="timers"]
@@ -193,10 +227,13 @@ autostart = true
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
 avoidance_enabled = true
-radius = 25.0
+radius = 32.0
 neighbor_distance = 200.0
 max_neighbors = 20
 time_horizon_agents = 2.0
 
+[connection signal="body_entered" from="senses/areas/SearchAreaStarve" to="." method="_on_search_area_starve_body_entered"]
+[connection signal="body_entered" from="senses/areas/DefaultNoticingArea" to="." method="_on_default_noticing_area_body_entered"]
+[connection signal="body_entered" from="senses/areas/SearchAreaHunger" to="." method="_on_search_area_hunger_body_entered"]
 [connection signal="timeout" from="timers/BehaviorChangeTimer" to="." method="_on_behavior_change_timer_timeout"]
 [connection signal="velocity_computed" from="NavigationAgent2D" to="." method="_on_navigation_agent_2d_velocity_computed"]

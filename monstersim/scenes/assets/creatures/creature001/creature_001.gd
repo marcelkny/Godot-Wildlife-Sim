@@ -30,6 +30,8 @@ extends CharacterBody2D
 @onready var nav_map = nav.get_navigation_map() # Store this once if the map doesn't change
 @onready var raycast_front = $senses/vision/RayCast2DFront
 @onready var collision_shape = $CollisionShape2D
+@onready var search_area_hungry = $senses/areas/SearchAreaHunger
+@onready var search_area_starving = $senses/areas/SearchAreaStarve
 
 @onready var behavior_timer = $"timers/BehaviorChangeTimer"
 
@@ -45,6 +47,7 @@ var raycast_target_right_normal: Vector2 = Vector2(150,0)
 var bar_min: float = 0
 var bar_max: float = 100
 
+var last_food_seen: StaticBody2D
 # enum for behaviour based on Movement
 enum MovementStates {RUNNING, STANDING, WALKING}
 var movement_state: MovementStates
@@ -60,7 +63,7 @@ var mood_state_second: MoodStates
 var mood_state_third: MoodStates
 var mood_state_fourth: MoodStates
 
-enum PhysicalStates {BLEEDING, BLEEDING_BADLY, DEAD, FINE, STAMINA_LOW, STARVING, WOUNDED_SMALL, WOUNDED_BADLY, NOT_SET}
+enum PhysicalStates {BLEEDING, BLEEDING_BADLY, DEAD, FINE, HUNGRY, STAMINA_LOW, STARVING, WOUNDED_SMALL, WOUNDED_BADLY, NOT_SET}
 var physical_state_primary: PhysicalStates
 var physical_state_first: PhysicalStates
 var physical_state_second: PhysicalStates
@@ -84,9 +87,33 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	DELTA = delta
+	if physical_state_primary == PhysicalStates.DEAD:
+		pass
+	elif physical_state_primary == PhysicalStates.HUNGRY || physical_state_primary == PhysicalStates.STARVING:
+		if physical_state_primary == PhysicalStates.HUNGRY:
+			print("HUNGRY")
+			search_area_starving.hide()
+			search_area_hungry.show()
+		if physical_state_primary == PhysicalStates.STARVING:
+			print("STARVING")
+			search_area_starving.show()
+			search_area_hungry.hide()
+		behavior_timer.stop()
+		behavior_state = BehaviorStates.SEARCHING
+		# if npc remembers noticing food somewhere
+		if last_food_seen:
+			move_towards_target(last_food_seen)
+		else:
+			pass
+
+		
+	else:
+		search_area_hungry.hide()
+		search_area_starving.hide()
+
 	if behavior_timer.is_stopped() == true:
 		calculate_behavior_basics()
-		behavior_timer.wait_time = randf_range(2.0, 6.0)
+		behavior_timer.wait_time = randf_range(2.0, 6.0) if behavior_state == BehaviorStates.SEARCHING else randf_range(6.0, 10.0)
 		behavior_timer.start()
 
 	if behavior_state != BehaviorStates.EATING && behavior_state != BehaviorStates.IDLE && behavior_state != BehaviorStates.PLAYING && behavior_state != BehaviorStates.SLEEPING &&behavior_state != BehaviorStates.TALKING:
@@ -123,9 +150,13 @@ func _physics_process(delta: float) -> void:
 	set_vision_raycast(current_direction)
 	set_bars()
 	
+func search_food():
+	pass
 	
 	
-func move_towards_target(targetPos: Vector2)->void:
+func move_towards_target(target: Node2D)->void:
+	
+	var targetPos: Vector2 = target.global_position
 	var direction = Vector2()
 	#print(targetPos)
 	nav.target_position = targetPos
@@ -146,7 +177,7 @@ func move_towards_target(targetPos: Vector2)->void:
 	current_direction = get_cardinal_direction(direction)
 	#print("Moving: ", current_direction)
 
-func wander_randomly(min_distance := 50, max_distance := 150, max_attempts := 10):
+func wander_randomly(min_distance := 50, max_distance := 200, max_attempts := 10):
 	var direction = Vector2()
 	for i in range(max_attempts):
 		var angle = randf() * TAU # TAU = 2*PI
@@ -196,13 +227,43 @@ func calculate_mood()->int:
 	return mood_state_primary
 
 func calculate_physicalstate()->int:
+	# unset physical states so they can be set or ignored if not set already
+	physical_state_primary = PhysicalStates.NOT_SET
+	physical_state_first = PhysicalStates.NOT_SET
+	physical_state_second = PhysicalStates.NOT_SET
+	physical_state_third = PhysicalStates.NOT_SET
+	physical_state_fourth = PhysicalStates.NOT_SET
+	
+	# var physicalStates = { "first": null, "second": null, "tird": null, "fourth": null}
+	# checkIfPhysicalStatesSetInObject(physicalStates)
+	# first look if npc is still alive
+	if health <= 0:
+		physical_state_primary = PhysicalStates.DEAD
+		return physical_state_primary
+	# do hunger now because its a critical value
+	if hunger < 55:
+		# if hunger not critical, put it on a "normal" state
+		physical_state_primary = PhysicalStates.HUNGRY
+		if hunger < 15:
+			# hunger is critical, so it needs to be priority
+			physical_state_primary = PhysicalStates.STARVING
+			# return this state so npc can search and find food or else will die
 	return physical_state_primary
 
+func checkIfPhysicalStatesSetInObject(physicalStates)->String:
+	var keys = physicalStates.keys()
+	print(keys)
+	for state in physicalStates:
+		print(physicalStates[state])
+	return "null"
+
 func calculate_behavior()->int:
-	print("BehaviorState: ", behavior_state)
+	#print("BehaviorState: ", behavior_state)
 	var enum_values = BehaviorStates.values()
 	behavior_state = enum_values[randi() % enum_values.size()]
-	print("BehaviorState: ", behavior_state)
+	#print("BehaviorState: ", behavior_state)
+	if physical_state_primary == PhysicalStates.HUNGRY || physical_state_primary == PhysicalStates.STARVING:
+		behavior_state = BehaviorStates.SEARCHING
 	return behavior_state
 
 func calculate_movement()->void:
@@ -262,3 +323,23 @@ func _on_behavior_change_timer_timeout() -> void:
 
 func _on_navigation_agent_2d_velocity_computed(safe_velocity: Vector2) -> void:
 	velocity = safe_velocity
+
+
+func _on_search_area_hunger_body_entered(body: Node2D) -> void:
+	if physical_state_primary == PhysicalStates.HUNGRY:
+		if body.is_in_group("apple"):
+			print("found food: ", body)
+			last_food_seen = body
+
+
+func _on_search_area_starve_body_entered(body: Node2D) -> void:
+	if physical_state_primary == PhysicalStates.STARVING:
+		if body.is_in_group("apple"):
+			print("found food: ", body)
+			last_food_seen = body
+
+
+func _on_default_noticing_area_body_entered(body: Node2D) -> void:
+	if body.is_in_group("apple"):
+		print("found food: ", body)
+		last_food_seen = body

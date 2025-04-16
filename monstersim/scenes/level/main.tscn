@@ -1,9 +1,11 @@
-[gd_scene load_steps=35 format=4 uid="uid://d0vk5uy57upw2"]
+[gd_scene load_steps=37 format=4 uid="uid://d0vk5uy57upw2"]
 
 [ext_resource type="Texture2D" uid="uid://c5h4ljuvf5i7" path="res://assets/pixelart/tilemaps/floors-village-01.png" id="1_iernp"]
 [ext_resource type="PackedScene" uid="uid://bbo8midd5sr35" path="res://scenes/assets/creatures/creature001/creature_001.tscn" id="1_oept5"]
 [ext_resource type="PackedScene" uid="uid://uq22ym5cnlpt" path="res://scenes/assets/PlayerCam/player_cam.tscn" id="3_64aob"]
 [ext_resource type="Script" uid="uid://wx2c8smmdsi6" path="res://scenes/assets/PlayerCam/player_cam.gd" id="4_gjage"]
+[ext_resource type="PackedScene" uid="uid://cverqmxxn5i41" path="res://scenes/assets/environment/clutter/tree_01.tscn" id="5_gjage"]
+[ext_resource type="PackedScene" uid="uid://ivhyv83qhw3p" path="res://scenes/assets/environment/clutter/apple.tscn" id="6_x0mk0"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_iernp"]
 vertices = PackedVector2Array(16, 16, -16, 16, -16, -16, 16, -16)
@@ -193,18 +195,6 @@ texture_region_size = Vector2i(32, 32)
 12:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
 13:0/0 = 0
 13:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
-16:0/0 = 0
-17:0/0 = 0
-18:0/0 = 0
-19:0/0 = 0
-20:0/0 = 0
-21:0/0 = 0
-24:0/0 = 0
-25:0/0 = 0
-26:0/0 = 0
-27:0/0 = 0
-28:0/0 = 0
-29:0/0 = 0
 0:1/0 = 0
 0:1/0/navigation_layer_0/polygon = SubResource("NavigationPolygon_855hj")
 1:1/0 = 0
@@ -228,18 +218,6 @@ texture_region_size = Vector2i(32, 32)
 12:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
 13:1/0 = 0
 13:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
-16:1/0 = 0
-17:1/0 = 0
-18:1/0 = 0
-19:1/0 = 0
-20:1/0 = 0
-21:1/0 = 0
-24:1/0 = 0
-25:1/0 = 0
-26:1/0 = 0
-27:1/0 = 0
-28:1/0 = 0
-29:1/0 = 0
 0:2/0 = 0
 0:2/0/navigation_layer_0/polygon = SubResource("NavigationPolygon_64aob")
 1:2/0 = 0
@@ -263,54 +241,6 @@ texture_region_size = Vector2i(32, 32)
 12:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
 13:2/0 = 0
 13:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-16, -16, 16, -16, 16, 16, -16, 16)
-16:2/0 = 0
-17:2/0 = 0
-18:2/0 = 0
-19:2/0 = 0
-20:2/0 = 0
-21:2/0 = 0
-24:2/0 = 0
-25:2/0 = 0
-26:2/0 = 0
-27:2/0 = 0
-28:2/0 = 0
-29:2/0 = 0
-16:3/0 = 0
-17:3/0 = 0
-18:3/0 = 0
-19:3/0 = 0
-20:3/0 = 0
-21:3/0 = 0
-24:3/0 = 0
-25:3/0 = 0
-26:3/0 = 0
-27:3/0 = 0
-28:3/0 = 0
-29:3/0 = 0
-16:4/0 = 0
-17:4/0 = 0
-18:4/0 = 0
-19:4/0 = 0
-20:4/0 = 0
-21:4/0 = 0
-24:4/0 = 0
-25:4/0 = 0
-26:4/0 = 0
-27:4/0 = 0
-28:4/0 = 0
-29:4/0 = 0
-16:5/0 = 0
-17:5/0 = 0
-18:5/0 = 0
-19:5/0 = 0
-20:5/0 = 0
-21:5/0 = 0
-24:5/0 = 0
-25:5/0 = 0
-26:5/0 = 0
-27:5/0 = 0
-28:5/0 = 0
-29:5/0 = 0
 6:0/0 = 0
 6:0/0/navigation_layer_0/polygon = SubResource("NavigationPolygon_g2k0t")
 6:2/0 = 0
@@ -341,6 +271,7 @@ tile_map_data = PackedByteArray("AACQ/73/AAANAAEAAACQ/77/AAANAAEAAACQ/7//AAANAAE
 tile_set = SubResource("TileSet_64aob")
 
 [node name="PlayerCam" parent="." instance=ExtResource("3_64aob")]
+position = Vector2(3136, -549)
 script = ExtResource("4_gjage")
 
 [node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
@@ -350,41 +281,69 @@ navigation_polygon = SubResource("NavigationPolygon_7e4gq")
 y_sort_enabled = true
 
 [node name="Creature001" parent="Objects" instance=ExtResource("1_oept5")]
-position = Vector2(-18, 10)
+position = Vector2(3424, -371)
 hunger_rate_modifier = 1.0
 energy_rate_modifier = 1.0
 
-[node name="Creature002" parent="Objects" instance=ExtResource("1_oept5")]
-position = Vector2(-69, 10)
-hunger_rate_modifier = 1.0
-energy_rate_modifier = 1.0
+[node name="Tree01" parent="Objects" instance=ExtResource("5_gjage")]
+position = Vector2(3299, -498)
 
-[node name="Creature003" parent="Objects" instance=ExtResource("1_oept5")]
-position = Vector2(-121, 10)
-hunger_rate_modifier = 1.0
-energy_rate_modifier = 1.0
+[node name="Tree02" parent="Objects" instance=ExtResource("5_gjage")]
+position = Vector2(3482, -531)
 
-[node name="Creature004" parent="Objects" instance=ExtResource("1_oept5")]
-position = Vector2(-172, 10)
-hunger_rate_modifier = 1.0
-energy_rate_modifier = 1.0
+[node name="Tree03" parent="Objects" instance=ExtResource("5_gjage")]
+position = Vector2(2908, -554)
 
-[node name="Creature005" parent="Objects" instance=ExtResource("1_oept5")]
-position = Vector2(-18, -54)
-hunger_rate_modifier = 1.0
-energy_rate_modifier = 1.0
+[node name="Tree04" parent="Objects" instance=ExtResource("5_gjage")]
+position = Vector2(2913, -420)
 
-[node name="Creature006" parent="Objects" instance=ExtResource("1_oept5")]
-position = Vector2(-69, -54)
-hunger_rate_modifier = 1.0
-energy_rate_modifier = 1.0
+[node name="Tree05" parent="Objects" instance=ExtResource("5_gjage")]
+position = Vector2(3355, -701)
 
-[node name="Creature007" parent="Objects" instance=ExtResource("1_oept5")]
-position = Vector2(-121, -54)
-hunger_rate_modifier = 1.0
-energy_rate_modifier = 1.0
+[node name="Tree06" parent="Objects" instance=ExtResource("5_gjage")]
+position = Vector2(3501, -762)
 
-[node name="Creature008" parent="Objects" instance=ExtResource("1_oept5")]
-position = Vector2(-172, -54)
-hunger_rate_modifier = 1.0
-energy_rate_modifier = 1.0
+[node name="Tree07" parent="Objects" instance=ExtResource("5_gjage")]
+position = Vector2(3398, -348)
+
+[node name="Tree08" parent="Objects" instance=ExtResource("5_gjage")]
+position = Vector2(2758, -598)
+
+[node name="Tree09" parent="Objects" instance=ExtResource("5_gjage")]
+position = Vector2(2906, -761)
+
+[node name="Tree10" parent="Objects" instance=ExtResource("5_gjage")]
+position = Vector2(3299, -969)
+
+[node name="Tree11" parent="Objects" instance=ExtResource("5_gjage")]
+position = Vector2(2533, -547)
+
+[node name="Tree12" parent="Objects" instance=ExtResource("5_gjage")]
+position = Vector2(2663, -876)
+
+[node name="Tree13" parent="Objects" instance=ExtResource("5_gjage")]
+position = Vector2(2989, -292)
+
+[node name="Tree14" parent="Objects" instance=ExtResource("5_gjage")]
+position = Vector2(3670, -802)
+
+[node name="Tree15" parent="Objects" instance=ExtResource("5_gjage")]
+position = Vector2(3063, -676)
+
+[node name="Tree16" parent="Objects" instance=ExtResource("5_gjage")]
+position = Vector2(2423, -926)
+
+[node name="Apple" parent="Objects" instance=ExtResource("6_x0mk0")]
+position = Vector2(3090, -389)
+
+[node name="Apple2" parent="Objects" instance=ExtResource("6_x0mk0")]
+position = Vector2(2898, -719)
+
+[node name="Apple3" parent="Objects" instance=ExtResource("6_x0mk0")]
+position = Vector2(3492, -356)
+
+[node name="Apple4" parent="Objects" instance=ExtResource("6_x0mk0")]
+position = Vector2(2970, -231)
+
+[node name="Apple5" parent="Objects" instance=ExtResource("6_x0mk0")]
+position = Vector2(2517, -413)

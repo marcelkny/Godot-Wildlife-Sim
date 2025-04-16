@@ -1,10 +1,12 @@
 extends Camera2D
 
-@export var move_speed := 500.0              # Target speed of camera movement
+@export var move_speed_min := 200             # Target speed of camera movement
+@export var move_speed_max := 700
+var move_speed := 500
 @export var easing := 0.1                    # How quickly the camera catches up (0.0 - 1.0)
-@export var zoom_speed := 0.1
+@export var zoom_speed := 0.15
 @export var min_zoom := 0.5
-@export var max_zoom := 3.0
+@export var max_zoom := 4.0
 
 var target_position: Vector2
 
@@ -33,9 +35,9 @@ func _process(delta):
 
 func _unhandled_input(event):
 	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+		if event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			zoom_camera(-zoom_speed)
-		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+		elif event.button_index == MOUSE_BUTTON_WHEEL_UP:
 			zoom_camera(zoom_speed)
 	elif event is InputEventKey and event.pressed:
 		if event.keycode == KEY_Q:
@@ -45,6 +47,11 @@ func _unhandled_input(event):
 
 func zoom_camera(amount):
 	var new_zoom = zoom + Vector2(amount, amount)
-	new_zoom.x = clamp(new_zoom.x, min_zoom, max_zoom)
+	new_zoom.x = clamp(new_zoom.x, min_zoom, max_zoom)		
+	move_speed = move_speed / new_zoom.x
+	if move_speed < move_speed_min:
+		move_speed = move_speed_min
+	if move_speed > move_speed_max:
+		move_speed = move_speed_max
 	new_zoom.y = clamp(new_zoom.y, min_zoom, max_zoom)
 	zoom = new_zoom
