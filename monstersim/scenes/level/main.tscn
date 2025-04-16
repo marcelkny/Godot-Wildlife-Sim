@@ -281,7 +281,7 @@ navigation_polygon = SubResource("NavigationPolygon_7e4gq")
 y_sort_enabled = true
 
 [node name="Creature001" parent="Objects" instance=ExtResource("1_oept5")]
-position = Vector2(3424, -371)
+position = Vector2(3590, -301)
 hunger_rate_modifier = 1.0
 energy_rate_modifier = 1.0
 
@@ -341,6 +341,27 @@ position = Vector2(2898, -719)
 
 [node name="Apple3" parent="Objects" instance=ExtResource("6_x0mk0")]
 position = Vector2(3492, -356)
+
+[node name="Apple6" parent="Objects" instance=ExtResource("6_x0mk0")]
+position = Vector2(3686, -361)
+
+[node name="Apple7" parent="Objects" instance=ExtResource("6_x0mk0")]
+position = Vector2(3681, -242)
+
+[node name="Apple8" parent="Objects" instance=ExtResource("6_x0mk0")]
+position = Vector2(3489, -243)
+
+[node name="Apple9" parent="Objects" instance=ExtResource("6_x0mk0")]
+position = Vector2(3593, -409)
+
+[node name="Apple10" parent="Objects" instance=ExtResource("6_x0mk0")]
+position = Vector2(3587, -194)
+
+[node name="Apple11" parent="Objects" instance=ExtResource("6_x0mk0")]
+position = Vector2(3717, -307)
+
+[node name="Apple12" parent="Objects" instance=ExtResource("6_x0mk0")]
+position = Vector2(3465, -299)
 
 [node name="Apple4" parent="Objects" instance=ExtResource("6_x0mk0")]
 position = Vector2(2970, -231)
