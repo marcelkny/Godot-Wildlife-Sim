@@ -271,7 +271,7 @@ tile_map_data = PackedByteArray("AACQ/73/AAANAAEAAACQ/77/AAANAAEAAACQ/7//AAANAAE
 tile_set = SubResource("TileSet_64aob")
 
 [node name="PlayerCam" parent="." instance=ExtResource("3_64aob")]
-position = Vector2(3136, -549)
+position = Vector2(3592, -325)
 script = ExtResource("4_gjage")
 
 [node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
