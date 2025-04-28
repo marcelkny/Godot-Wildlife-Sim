@@ -12,7 +12,7 @@ extends CharacterBody2D
 @export var accel = 7
 
 @export var health_rate_modifier: float = 1.0
-@export var hunger_rate_modifier: float = 0.5
+@export var hunger_rate_modifier: float = 1
 @export var stamina_rate_modifier: float = 1.0
 @export var energy_rate_modifier: float = 0.2
 @export var social_rate_modifier: float = 0.2
@@ -32,9 +32,10 @@ extends CharacterBody2D
 @onready var collision_shape = $CollisionShape2D
 @onready var search_area_hungry = $senses/areas/SearchAreaHunger
 @onready var search_area_starving = $senses/areas/SearchAreaStarve
+@onready var search_area_starving_shape = $senses/areas/SearchAreaStarve/CollisionShape2D
 
 @onready var behavior_timer = $"timers/BehaviorChangeTimer"
-
+@export var nav_region: NavigationRegion2D
 
 var DELTA: float
 var current_movement_target: Vector2
@@ -49,6 +50,8 @@ var bar_min: float = 0
 var bar_max: float = 100
 
 var last_food_seen: StaticBody2D
+var can_eat_current_food: bool = false
+var food_array: Array[StaticBody2D]
 # enum for behaviour based on Movement
 enum MovementStates {RUNNING, STANDING, WALKING}
 var movement_state: MovementStates
@@ -85,6 +88,16 @@ func _ready() -> void:
 	behavior_state = BehaviorStates.IDLE
 	mood_state_primary = MoodStates.HAPPY
 	physical_state_primary = PhysicalStates.FINE
+	
+	var radius: float
+	if search_area_starving_shape is CircleShape2D:
+		radius = search_area_starving_shape.radius
+	else:
+		radius = 100
+	
+	for body in get_tree().get_nodes_in_group("apple"):
+		if body is StaticBody2D and position.distance_to(body.position) <= radius * 2:
+			set_current_food_target(body)
 
 func _physics_process(delta: float) -> void:
 	DELTA = delta
@@ -93,16 +106,18 @@ func _physics_process(delta: float) -> void:
 	if behavior_state == BehaviorStates.EATING:
 			behavior_timer.stop()
 			if hunger < bar_max:
-				print("hunger < bar_max")
+				can_eat_current_food = false
+				FoodManager.set_food(last_food_seen, false)
 				hunger = hunger + 0.2
-				print("hunger: ", hunger)
 			if hunger >= bar_max:
 				physical_state_primary = PhysicalStates.FINE
 				last_food_seen.hide()
+				last_food_seen.is_spawned = false
 				last_food_seen = null
 				behavior_timer.start()
 				calculate_behavior()
 				movement_target_reached = false
+				
 	elif physical_state_primary == PhysicalStates.HUNGRY || physical_state_primary == PhysicalStates.STARVING:
 		if behavior_state != BehaviorStates.EATING:
 			behavior_state = BehaviorStates.SEARCHING
@@ -119,12 +134,10 @@ func _physics_process(delta: float) -> void:
 			
 		
 		if physical_state_primary == PhysicalStates.HUNGRY:
-			#print("HUNGRY")
 			search_area_starving.hide()
 			search_area_hungry.show()
 		
 		if physical_state_primary == PhysicalStates.STARVING:
-			#print("STARVING")
 			search_area_starving.show()
 			search_area_hungry.hide()
 		
@@ -182,13 +195,9 @@ func move_towards_target(target: Node2D)->void:
 		return
 	var targetPos: Vector2 = target.global_position
 	var direction = Vector2()
-	#print(targetPos)
 	nav.target_position = targetPos
-	#print("Target: %s"%targetPos)
-	#print("Me: %s"%global_position)
 	direction = nav.get_next_path_position() - global_position
 	direction = direction.normalized()
-	#print(direction)
 	
 	velocity = velocity.lerp(direction * speed, accel * DELTA)
 	
@@ -200,12 +209,10 @@ func move_towards_target(target: Node2D)->void:
 	# Get the dominant cardinal direction
 	current_direction = get_cardinal_direction(direction)
 	var distance_to_target = global_position.distance_to(targetPos)
-	print("distance: ", distance_to_target)
 	if distance_to_target < 10:
 		movement_target_reached = true
-	#print("Moving: ", current_direction)
 
-func wander_randomly(min_distance := 50, max_distance := 200, max_attempts := 10):
+func wander_randomly(min_distance := 100, max_distance := 2000, max_attempts := 10):
 	var direction = Vector2()
 	for i in range(max_attempts):
 		var angle = randf() * TAU # TAU = 2*PI
@@ -214,15 +221,15 @@ func wander_randomly(min_distance := 50, max_distance := 200, max_attempts := 10
 		var candidate_position = global_position + offset
 
 		# Check if the position is reachable (i.e., on the navmesh)
-		var targetPos = NavigationServer2D.map_get_closest_point(nav_map, candidate_position)
 		
+		#var nav_map = nav_region.get_navigation_map()
+		var targetPos = NavigationServer2D.map_get_closest_point(nav_map, candidate_position)
+		#targetPos = get_closest_point_in_region(nav_region, candidate_position)
 		# Optionally, add a check: is it close enough to the original?
 		if global_position.distance_to(targetPos) <= distance * 1.5:
 			nav.target_position = targetPos
-			#print("Wandering to: ", targetPos)
 			direction = nav.get_next_path_position() - global_position
 			direction = direction.normalized()
-			#print("DIR: ",direction)
 			return true # success
 
 	print("Couldn't find valid wander target")
@@ -244,8 +251,6 @@ func set_vision_raycast(facing: String)->void:
 		raycast_front.target_position = raycast_target_left_normal
 	if facing == "right":
 		raycast_front.target_position = raycast_target_right_normal
-	#print(raycast_front.target_position)
-	#print("current_dir in set_vision_raycast", facing)
 
 func calculate_behavior_basics()->void:
 	calculate_behavior()
@@ -272,27 +277,24 @@ func calculate_physicalstate()->int:
 	if hunger < 55:
 		# if hunger not critical, put it on a "normal" state
 		physical_state_primary = PhysicalStates.HUNGRY
+		simple_get_closest_food_target_memory()
 		if hunger < 15:
 			# hunger is critical, so it needs to be priority
 			physical_state_primary = PhysicalStates.STARVING
+			simple_get_closest_food_target_memory()
 			# return this state so npc can search and find food or else will die
 	return physical_state_primary
 
 func checkIfPhysicalStatesSetInObject(physicalStates)->String:
 	var keys = physicalStates.keys()
-	#print(keys)
-	#for state in physicalStates:
-		#print(physicalStates[state])
 	return "null"
 
 func calculate_behavior()->int:
 	var new_behavior = behavior_state
 	
 	while new_behavior == behavior_state || behavior_state == BehaviorStates.EATING:
-		#print("BehaviorState: ", behavior_state)
 		var enum_values = BehaviorStates.values()
 		behavior_state = enum_values[randi() % enum_values.size()]
-		#print("BehaviorState: ", behavior_state)
 	if physical_state_primary == PhysicalStates.HUNGRY || physical_state_primary == PhysicalStates.STARVING:
 		behavior_state = BehaviorStates.SEARCHING
 	return behavior_state
@@ -315,18 +317,65 @@ func set_bars() -> void:
 	social_bar.value = social
 	mating_need_bar.value = mating_need
 
+func simple_get_closest_food_target_memory()->void:
+	var tmp_dist_to_npc = null
+	var tmp_food: StaticBody2D
+	if food_array.size() <=0:
+		return
+	
+	for food in food_array:
+		if food == null:
+			continue
+		print("food in array: ", food)
+		var food_pos = food.global_position
+		var food_dist = global_position.distance_to(food_pos)
+		if tmp_dist_to_npc == null:
+			tmp_dist_to_npc = food_dist
+		elif food_dist < tmp_dist_to_npc:
+			tmp_food = food
+	set_current_food_target(tmp_food)
 
-func set_current_food_target(new_food: Node2D):
-	if last_food_seen:
-		var position_old = last_food_seen.global_position
-		var position_new = new_food.global_position
-		if global_position.distance_to(position_new) < global_position.distance_to(position_old):
-			last_food_seen = new_food
+func set_current_food_target(new_food: Node2D)->void:
+	#if can_eat_current_food == true:
+	#	return
+	print(food_array)
+	var can_eat = true
+	if new_food not in food_array:
+		food_array.append(new_food)
+		# can i eat the food i just found
+	#can_eat = FoodManager.is_food_available(new_food)
+	
+	# which food item is the closest to me?
+	# helper variables
+	var tmp_dist_to_npc = null
+	var tmp_food = null
+	
+	# iterate the known food items
+	for food in food_array:
+		can_eat = FoodManager.is_food_available(food)
+		print("can_eat: ", can_eat)
+		if new_food == food:
+			if can_eat == true:
+				tmp_food = new_food
+			else:
+				continue
+		else:
+			if can_eat == true:
+				var food_pos = food.global_position
+				var food_dist = global_position.distance_to(food_pos)
+				if tmp_dist_to_npc == null:
+					tmp_dist_to_npc = food_dist
+				elif food_dist < tmp_dist_to_npc:
+					tmp_food = food
+	if tmp_food == null:
+		simple_get_closest_food_target_memory
 	else:
-		last_food_seen = new_food
+		last_food_seen = tmp_food
+	print("last_food_seen in set_current_food_target: ", tmp_food)
+			
+	
 
 func on_timemanager_second_passed() -> void:
-	#print(movement_state)
 	if behavior_state != BehaviorStates.EATING:
 		hunger = hunger - (1 * hunger_rate_modifier)
 		if hunger < bar_min:

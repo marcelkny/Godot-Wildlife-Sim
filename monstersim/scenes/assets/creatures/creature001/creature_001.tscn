@@ -94,13 +94,13 @@ bg_color = Color(0.539143, 0.533726, 1, 1)
 bg_color = Color(1, 0.273101, 0.750435, 1)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1gv3r"]
-radius = 280.064
+radius = 354.069
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_377jj"]
-radius = 83.0241
+radius = 126.194
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_3wwms"]
-radius = 148.03
+radius = 223.009
 
 [node name="Monster001" type="CharacterBody2D" groups=["npcs"]]
 script = ExtResource("1_1gv3r")
@@ -202,7 +202,6 @@ target_position = Vector2(0, 150)
 [node name="areas" type="Node2D" parent="senses"]
 
 [node name="SearchAreaStarve" type="Area2D" parent="senses/areas"]
-visible = false
 position = Vector2(0, -10)
 collision_mask = 3
 
@@ -217,7 +216,6 @@ collision_mask = 3
 shape = SubResource("CircleShape2D_377jj")
 
 [node name="SearchAreaHunger" type="Area2D" parent="senses/areas"]
-visible = false
 position = Vector2(0, -10)
 collision_mask = 3
 
